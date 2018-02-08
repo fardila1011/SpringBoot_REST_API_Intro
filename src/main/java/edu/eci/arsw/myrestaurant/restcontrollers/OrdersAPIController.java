@@ -23,6 +23,8 @@ import edu.eci.arsw.myrestaurant.services.RestaurantOrderServicesStub;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -35,6 +37,19 @@ import org.springframework.web.bind.annotation.RestController;
  * @author hcadavid
  */
 public class OrdersAPIController {
-
+    @RestController
+    @RequestMapping(value = "/orders")
+    public class ordersController {
+        @RequestMapping(method = RequestMethod.GET)
+        public ResponseEntity<?> manejadorGetRecursoOrders(){
+            try {
+                //obtener datos que se enviarán a través del API
+                return new ResponseEntity<>(data,HttpStatus.ACCEPTED);
+            } catch (XXException ex) {
+                Logger.getLogger(XXController.class.getName()).log(Level.SEVERE, null, ex);
+                return new ResponseEntity<>("Error bla bla bla",HttpStatus.NOT_FOUND);
+            }  
+        }          
+    }
     
 }
