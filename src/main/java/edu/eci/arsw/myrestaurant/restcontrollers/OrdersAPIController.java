@@ -25,6 +25,7 @@ import edu.eci.arsw.myrestaurant.model.RestaurantProduct;
 import edu.eci.arsw.myrestaurant.services.OrderServicesException;
 import edu.eci.arsw.myrestaurant.services.RestaurantOrderServices;
 import edu.eci.arsw.myrestaurant.services.RestaurantOrderServicesStub;
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
@@ -102,6 +103,20 @@ public class OrdersAPIController {
             tableOrder.add(table);
 
             return new ResponseEntity<>(tableOrder, HttpStatus.ACCEPTED);
+        } catch (Exception ex) {
+            Logger.getLogger(OrdersAPIController.class.getName()).log(Level.SEVERE, null, ex);
+            return new ResponseEntity<>(ex, HttpStatus.NOT_FOUND);
+        }
+    }
+    
+    @RequestMapping(value = "/orders/{tableId}/total", method = RequestMethod.GET)
+    public ResponseEntity<?> manejadorGetRecursoTotalOrder(@PathVariable Integer tableId) {
+        try {
+            ObjectNode totalOrder = mapper.createObjectNode();
+            
+            totalOrder.put("total", data.calculateTableBill(tableId));
+
+            return new ResponseEntity<>(totalOrder, HttpStatus.ACCEPTED);
         } catch (Exception ex) {
             Logger.getLogger(OrdersAPIController.class.getName()).log(Level.SEVERE, null, ex);
             return new ResponseEntity<>(ex, HttpStatus.NOT_FOUND);

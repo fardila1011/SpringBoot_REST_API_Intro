@@ -14,12 +14,12 @@ import org.springframework.stereotype.Service;
 @Service
 public class RestaurantOrderServicesStub implements RestaurantOrderServices {
     
-    @Autowired
     BillCalculator calc = null;
 
     public RestaurantOrderServicesStub() {
     }
-
+    
+    @Autowired
     public void setBillCalculator(BillCalculator calc) {
         this.calc = calc;
     }
