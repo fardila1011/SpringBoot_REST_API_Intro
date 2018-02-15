@@ -16,15 +16,23 @@
  */
 package edu.eci.arsw.myrestaurant.restcontrollers;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import edu.eci.arsw.myrestaurant.model.Order;
 import edu.eci.arsw.myrestaurant.model.ProductType;
 import edu.eci.arsw.myrestaurant.model.RestaurantProduct;
+import edu.eci.arsw.myrestaurant.services.OrderServicesException;
+import edu.eci.arsw.myrestaurant.services.RestaurantOrderServices;
 import edu.eci.arsw.myrestaurant.services.RestaurantOrderServicesStub;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -36,20 +44,44 @@ import org.springframework.web.bind.annotation.RestController;
  *
  * @author hcadavid
  */
+@RestController
+@RequestMapping(value = "/orders")
 public class OrdersAPIController {
-    @RestController
-    @RequestMapping(value = "/orders")
-    public class ordersController {
-        @RequestMapping(method = RequestMethod.GET)
-        public ResponseEntity<?> manejadorGetRecursoOrders(){
-            try {
-                //obtener datos que se enviarán a través del API
-                return new ResponseEntity<>(data,HttpStatus.ACCEPTED);
-            } catch (XXException ex) {
-                Logger.getLogger(XXController.class.getName()).log(Level.SEVERE, null, ex);
-                return new ResponseEntity<>("Error bla bla bla",HttpStatus.NOT_FOUND);
-            }  
-        }          
-    }
+
+    private Map<Integer, Order> tableOrders = new HashMap<Integer, Order>();
     
+    @Autowired
+    RestaurantOrderServices data;
+
+    @RequestMapping(method = RequestMethod.GET)
+    public ResponseEntity<?> manejadorGetRecursoOrders() {
+        try {
+            for (Integer i : data.getTablesWithOrders()){
+                tableOrders.put(i, data.getTableOrder(i));
+            }
+            
+            ObjectMapper mapper = new ObjectMapper();
+            ArrayNode tables = mapper.createArrayNode();
+            
+            for (Map.Entry<Integer, Order> orderN : tableOrders.entrySet()) {
+                ObjectNode order = mapper.createObjectNode();
+                order.put("table", orderN.getValue().getTableNumber());
+                
+                ArrayNode products = mapper.createArrayNode();
+                for (String p : orderN.getValue().getOrderedDishes()){
+                    ObjectNode product = mapper.createObjectNode();
+                    product.put("product", p);
+                    product.put("amount", orderN.getValue().getDishOrderedAmount(p));
+                    products.add(product);
+                }
+                order.put("dishes", products);
+                tables.add(order);
+            }
+            
+            return new ResponseEntity<>(tables , HttpStatus.ACCEPTED);
+        } catch (Exception ex) {
+            Logger.getLogger(OrdersAPIController.class.getName()).log(Level.SEVERE, null, ex);
+            return new ResponseEntity<>( ex, HttpStatus.NOT_FOUND);
+        }
+    }
 }
