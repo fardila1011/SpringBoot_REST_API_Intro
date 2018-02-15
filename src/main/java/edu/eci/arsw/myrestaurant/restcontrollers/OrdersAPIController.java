@@ -48,26 +48,26 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 public class OrdersAPIController {
-
+    
     private Map<Integer, Order> tableOrders = new HashMap<Integer, Order>();
     ObjectMapper mapper = new ObjectMapper();
-
+    
     @Autowired
     RestaurantOrderServices data;
-
+    
     @RequestMapping(value = "/orders", method = RequestMethod.GET)
     public ResponseEntity<?> manejadorGetRecursoOrders() {
         try {
             for (Integer i : data.getTablesWithOrders()) {
                 tableOrders.put(i, data.getTableOrder(i));
             }
-
+            
             ArrayNode tables = mapper.createArrayNode();
-
+            
             for (Map.Entry<Integer, Order> orderN : tableOrders.entrySet()) {
                 ObjectNode order = mapper.createObjectNode();
                 order.put("table", orderN.getValue().getTableNumber());
-
+                
                 ArrayNode products = mapper.createArrayNode();
                 for (String p : orderN.getValue().getOrderedDishes()) {
                     ObjectNode product = mapper.createObjectNode();
@@ -77,20 +77,20 @@ public class OrdersAPIController {
                 order.put("dishes", products);
                 tables.add(order);
             }
-
+            
             return new ResponseEntity<>(tables, HttpStatus.ACCEPTED);
         } catch (Exception ex) {
             Logger.getLogger(OrdersAPIController.class.getName()).log(Level.SEVERE, null, ex);
             return new ResponseEntity<>(ex, HttpStatus.NOT_FOUND);
         }
     }
-
+    
     @RequestMapping(value = "/orders/{tableId}", method = RequestMethod.GET)
     public ResponseEntity<?> manejadorGetRecursoOrderTable(@PathVariable Integer tableId) {
         try {
             ArrayNode tableOrder = mapper.createArrayNode();
             ObjectNode table = mapper.createObjectNode();
-
+            
             table.put("table", tableId);
             ArrayNode products = mapper.createArrayNode();
             for (String p : data.getTableOrder(tableId).getOrderedDishes()) {
@@ -99,9 +99,9 @@ public class OrdersAPIController {
                 products.add(product);
             }
             table.put("dishes", products);
-
+            
             tableOrder.add(table);
-
+            
             return new ResponseEntity<>(tableOrder, HttpStatus.ACCEPTED);
         } catch (Exception ex) {
             Logger.getLogger(OrdersAPIController.class.getName()).log(Level.SEVERE, null, ex);
@@ -115,15 +115,15 @@ public class OrdersAPIController {
             ObjectNode totalOrder = mapper.createObjectNode();
             
             totalOrder.put("total", data.calculateTableBill(tableId));
-
+            
             return new ResponseEntity<>(totalOrder, HttpStatus.ACCEPTED);
         } catch (Exception ex) {
             Logger.getLogger(OrdersAPIController.class.getName()).log(Level.SEVERE, null, ex);
             return new ResponseEntity<>(ex, HttpStatus.NOT_FOUND);
         }
     }
-
-    @RequestMapping(value="/orders",method = RequestMethod.POST)
+    
+    @RequestMapping(value = "/orders", method = RequestMethod.POST)
     public ResponseEntity<?> manejadorPostRecursoOrders(@RequestBody String o) {
         try {
             Order order = mapper.readValue(o, Order.class);
@@ -133,6 +133,21 @@ public class OrdersAPIController {
             Logger.getLogger(OrdersAPIController.class.getName()).log(Level.SEVERE, null, ex);
             return new ResponseEntity<>("ex", HttpStatus.FORBIDDEN);
         }
-
+    }
+    
+    @RequestMapping(value = "/orders/{tableId}", method = RequestMethod.PUT)
+    public ResponseEntity<?> manejadorPutRecursoProductOrder(@RequestBody String o, @PathVariable Integer tableId) {
+        try {
+            Map<String,Integer> products = mapper.readValue(o, Map.class);
+            for (Map.Entry<String, Integer> product : products.entrySet()) {
+                data.getTableOrder(tableId).addDish(product.getKey(), product.getValue());
+            }
+            
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (Exception ex) {
+            Logger.getLogger(OrdersAPIController.class.getName()).log(Level.SEVERE, null, ex);
+            return new ResponseEntity<>("ex", HttpStatus.FORBIDDEN);
+        }
+        
     }
 }
