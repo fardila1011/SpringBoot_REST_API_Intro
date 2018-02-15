@@ -46,30 +46,29 @@ import org.springframework.web.bind.annotation.RestController;
  * @author hcadavid
  */
 @RestController
-//@RequestMapping(value = "/orders")
 public class OrdersAPIController {
 
     private Map<Integer, Order> tableOrders = new HashMap<Integer, Order>();
     ObjectMapper mapper = new ObjectMapper();
-    
+
     @Autowired
     RestaurantOrderServices data;
 
     @RequestMapping(value = "/orders", method = RequestMethod.GET)
     public ResponseEntity<?> manejadorGetRecursoOrders() {
         try {
-            for (Integer i : data.getTablesWithOrders()){
+            for (Integer i : data.getTablesWithOrders()) {
                 tableOrders.put(i, data.getTableOrder(i));
             }
-            
+
             ArrayNode tables = mapper.createArrayNode();
-            
+
             for (Map.Entry<Integer, Order> orderN : tableOrders.entrySet()) {
                 ObjectNode order = mapper.createObjectNode();
                 order.put("table", orderN.getValue().getTableNumber());
-                
+
                 ArrayNode products = mapper.createArrayNode();
-                for (String p : orderN.getValue().getOrderedDishes()){
+                for (String p : orderN.getValue().getOrderedDishes()) {
                     ObjectNode product = mapper.createObjectNode();
                     product.put("product", p);
                     product.put("amount", orderN.getValue().getDishOrderedAmount(p));
@@ -78,37 +77,49 @@ public class OrdersAPIController {
                 order.put("dishes", products);
                 tables.add(order);
             }
-            
-            return new ResponseEntity<>(tables , HttpStatus.ACCEPTED);
+
+            return new ResponseEntity<>(tables, HttpStatus.ACCEPTED);
         } catch (Exception ex) {
             Logger.getLogger(OrdersAPIController.class.getName()).log(Level.SEVERE, null, ex);
-            return new ResponseEntity<>( ex, HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(ex, HttpStatus.NOT_FOUND);
         }
     }
-    
-    @RequestMapping(value="/orders/{tableId}", method=RequestMethod.GET)
-    public ResponseEntity<?> manejadorGetRecursoOrderTable(@PathVariable Integer tableId){
-        try{
+
+    @RequestMapping(value = "/orders/{tableId}", method = RequestMethod.GET)
+    public ResponseEntity<?> manejadorGetRecursoOrderTable(@PathVariable Integer tableId) {
+        try {
             ArrayNode tableOrder = mapper.createArrayNode();
-            ObjectNode table= mapper.createObjectNode();
-            
+            ObjectNode table = mapper.createObjectNode();
+
             table.put("table", tableId);
             ArrayNode products = mapper.createArrayNode();
-            for (String p : data.getTableOrder(tableId).getOrderedDishes()){
-                    ObjectNode product = mapper.createObjectNode();
-                    product.put("product", p);
-                    product.put("amount", data.getTableOrder(tableId).getDishOrderedAmount(p));
-                    products.add(product);
-                }
+            for (String p : data.getTableOrder(tableId).getOrderedDishes()) {
+                ObjectNode product = mapper.createObjectNode();
+                product.put("product", p);
+                product.put("amount", data.getTableOrder(tableId).getDishOrderedAmount(p));
+                products.add(product);
+            }
             table.put("dishes", products);
-            
+
             tableOrder.add(table);
-            
-            return new ResponseEntity<>(tableOrder,HttpStatus.ACCEPTED);
+
+            return new ResponseEntity<>(tableOrder, HttpStatus.ACCEPTED);
         } catch (Exception ex) {
             Logger.getLogger(OrdersAPIController.class.getName()).log(Level.SEVERE, null, ex);
-            return new ResponseEntity<>( ex, HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(ex, HttpStatus.NOT_FOUND);
         }
     }
-    
+
+    @RequestMapping(value="/orders",method = RequestMethod.POST)
+    public ResponseEntity<?> manejadorPostRecursoOrders(@RequestBody String o) {
+        try {
+            Order order = mapper.readValue(o, Order.class);
+            data.addNewOrderToTable(order);
+            return new ResponseEntity<>(HttpStatus.CREATED);
+        } catch (Exception ex) {
+            Logger.getLogger(OrdersAPIController.class.getName()).log(Level.SEVERE, null, ex);
+            return new ResponseEntity<>("ex", HttpStatus.FORBIDDEN);
+        }
+
+    }
 }
