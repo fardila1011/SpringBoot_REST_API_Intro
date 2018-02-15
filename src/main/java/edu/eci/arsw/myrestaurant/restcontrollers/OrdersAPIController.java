@@ -70,8 +70,7 @@ public class OrdersAPIController {
                 ArrayNode products = mapper.createArrayNode();
                 for (String p : orderN.getValue().getOrderedDishes()) {
                     ObjectNode product = mapper.createObjectNode();
-                    product.put("product", p);
-                    product.put("amount", orderN.getValue().getDishOrderedAmount(p));
+                    product.put(p, orderN.getValue().getDishOrderedAmount(p));
                     products.add(product);
                 }
                 order.put("dishes", products);
@@ -95,8 +94,7 @@ public class OrdersAPIController {
             ArrayNode products = mapper.createArrayNode();
             for (String p : data.getTableOrder(tableId).getOrderedDishes()) {
                 ObjectNode product = mapper.createObjectNode();
-                product.put("product", p);
-                product.put("amount", data.getTableOrder(tableId).getDishOrderedAmount(p));
+                product.put(p, data.getTableOrder(tableId).getDishOrderedAmount(p));
                 products.add(product);
             }
             table.put("dishes", products);
