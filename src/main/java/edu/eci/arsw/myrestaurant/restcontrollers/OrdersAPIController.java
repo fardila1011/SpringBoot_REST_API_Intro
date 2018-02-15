@@ -148,6 +148,16 @@ public class OrdersAPIController {
             Logger.getLogger(OrdersAPIController.class.getName()).log(Level.SEVERE, null, ex);
             return new ResponseEntity<>("ex", HttpStatus.FORBIDDEN);
         }
-        
+    }
+    
+    @RequestMapping(value = "/orders/{tableId}", method = RequestMethod.DELETE)
+    public ResponseEntity<?> manejadorDeleteRecursoOrder(@PathVariable Integer tableId) {
+        try {
+            data.releaseTable(tableId);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (Exception ex) {
+            Logger.getLogger(OrdersAPIController.class.getName()).log(Level.SEVERE, null, ex);
+            return new ResponseEntity<>("ex", HttpStatus.FORBIDDEN);
+        }
     }
 }
