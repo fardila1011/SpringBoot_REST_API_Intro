@@ -35,6 +35,7 @@ import java.util.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -45,22 +46,22 @@ import org.springframework.web.bind.annotation.RestController;
  * @author hcadavid
  */
 @RestController
-@RequestMapping(value = "/orders")
+//@RequestMapping(value = "/orders")
 public class OrdersAPIController {
 
     private Map<Integer, Order> tableOrders = new HashMap<Integer, Order>();
+    ObjectMapper mapper = new ObjectMapper();
     
     @Autowired
     RestaurantOrderServices data;
 
-    @RequestMapping(method = RequestMethod.GET)
+    @RequestMapping(value = "/orders", method = RequestMethod.GET)
     public ResponseEntity<?> manejadorGetRecursoOrders() {
         try {
             for (Integer i : data.getTablesWithOrders()){
                 tableOrders.put(i, data.getTableOrder(i));
             }
             
-            ObjectMapper mapper = new ObjectMapper();
             ArrayNode tables = mapper.createArrayNode();
             
             for (Map.Entry<Integer, Order> orderN : tableOrders.entrySet()) {
@@ -84,4 +85,30 @@ public class OrdersAPIController {
             return new ResponseEntity<>( ex, HttpStatus.NOT_FOUND);
         }
     }
+    
+    @RequestMapping(value="/orders/{tableId}", method=RequestMethod.GET)
+    public ResponseEntity<?> manejadorGetRecursoOrderTable(@PathVariable Integer tableId){
+        try{
+            ArrayNode tableOrder = mapper.createArrayNode();
+            ObjectNode table= mapper.createObjectNode();
+            
+            table.put("table", tableId);
+            ArrayNode products = mapper.createArrayNode();
+            for (String p : data.getTableOrder(tableId).getOrderedDishes()){
+                    ObjectNode product = mapper.createObjectNode();
+                    product.put("product", p);
+                    product.put("amount", data.getTableOrder(tableId).getDishOrderedAmount(p));
+                    products.add(product);
+                }
+            table.put("dishes", products);
+            
+            tableOrder.add(table);
+            
+            return new ResponseEntity<>(tableOrder,HttpStatus.ACCEPTED);
+        } catch (Exception ex) {
+            Logger.getLogger(OrdersAPIController.class.getName()).log(Level.SEVERE, null, ex);
+            return new ResponseEntity<>( ex, HttpStatus.NOT_FOUND);
+        }
+    }
+    
 }
