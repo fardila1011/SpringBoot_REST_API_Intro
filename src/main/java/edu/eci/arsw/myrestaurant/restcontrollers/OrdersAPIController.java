@@ -81,7 +81,7 @@ public class OrdersAPIController {
             return new ResponseEntity<>(tables, HttpStatus.ACCEPTED);
         } catch (Exception ex) {
             Logger.getLogger(OrdersAPIController.class.getName()).log(Level.SEVERE, null, ex);
-            return new ResponseEntity<>(ex, HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>("<h1>¡Error "+HttpStatus.NOT_FOUND+"!</h1>", HttpStatus.NOT_FOUND);
         }
     }
     
@@ -105,7 +105,7 @@ public class OrdersAPIController {
             return new ResponseEntity<>(tableOrder, HttpStatus.ACCEPTED);
         } catch (Exception ex) {
             Logger.getLogger(OrdersAPIController.class.getName()).log(Level.SEVERE, null, ex);
-            return new ResponseEntity<>(ex, HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>("<h1>¡Error "+HttpStatus.NOT_FOUND+"!</h1>", HttpStatus.NOT_FOUND);
         }
     }
     
@@ -119,7 +119,7 @@ public class OrdersAPIController {
             return new ResponseEntity<>(totalOrder, HttpStatus.ACCEPTED);
         } catch (Exception ex) {
             Logger.getLogger(OrdersAPIController.class.getName()).log(Level.SEVERE, null, ex);
-            return new ResponseEntity<>(ex, HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>("<h1>¡Error "+HttpStatus.NOT_FOUND+"!</h1>", HttpStatus.NOT_FOUND);
         }
     }
     
@@ -131,7 +131,7 @@ public class OrdersAPIController {
             return new ResponseEntity<>(HttpStatus.CREATED);
         } catch (Exception ex) {
             Logger.getLogger(OrdersAPIController.class.getName()).log(Level.SEVERE, null, ex);
-            return new ResponseEntity<>("ex", HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>("<h1>¡Error "+HttpStatus.FORBIDDEN+"!</h1>", HttpStatus.FORBIDDEN);
         }
     }
     
@@ -146,7 +146,7 @@ public class OrdersAPIController {
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (Exception ex) {
             Logger.getLogger(OrdersAPIController.class.getName()).log(Level.SEVERE, null, ex);
-            return new ResponseEntity<>("ex", HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>("<h1>¡Error "+HttpStatus.FORBIDDEN+"!</h1>", HttpStatus.FORBIDDEN);
         }
     }
     
@@ -157,7 +157,7 @@ public class OrdersAPIController {
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (Exception ex) {
             Logger.getLogger(OrdersAPIController.class.getName()).log(Level.SEVERE, null, ex);
-            return new ResponseEntity<>("ex", HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>("<h1>¡Error "+HttpStatus.FORBIDDEN+"!</h1>", HttpStatus.FORBIDDEN);
         }
     }
 }
