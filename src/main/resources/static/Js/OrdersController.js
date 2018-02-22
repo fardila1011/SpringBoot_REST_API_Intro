@@ -47,7 +47,7 @@ axios.get('/orders')
         })
         .catch(function (error) {
             console.log(error);
-            alert("There is a problem with our servers. We apologize for the inconvince, please try again later.");
+            alert("There is a problem with our servers. We apologize for the inconvince, please try again later.    ");
         });
 
 function addOrder(order) {
