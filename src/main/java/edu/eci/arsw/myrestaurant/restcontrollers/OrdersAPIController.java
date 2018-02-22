@@ -65,11 +65,10 @@ public class OrdersAPIController {
             ArrayNode tables = mapper.createArrayNode();
             
             for (Map.Entry<Integer, Order> orderN : tableOrders.entrySet()) {
-                ObjectNode orderId = mapper.createObjectNode();
-                orderId.put("id", orderN.getValue().getId());
                 
                 ObjectNode order = mapper.createObjectNode();
                 order.put("tableNumber", orderN.getValue().getTableNumber());
+                order.put("id", orderN.getValue().getId());
                 
                 ArrayNode products = mapper.createArrayNode();
                 for (String p : orderN.getValue().getOrderedDishes()) {
