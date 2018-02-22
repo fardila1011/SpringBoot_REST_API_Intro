@@ -65,8 +65,8 @@ public class OrdersAPIController {
             ArrayNode tables = mapper.createArrayNode();
             
             for (Map.Entry<Integer, Order> orderN : tableOrders.entrySet()) {
-                /*ObjectNode orderId = mapper.createObjectNode();
-                orderId.put("id", orderN.getValue().getId());*/
+                ObjectNode orderId = mapper.createObjectNode();
+                orderId.put("id", orderN.getValue().getId());
                 
                 ObjectNode order = mapper.createObjectNode();
                 order.put("tableNumber", orderN.getValue().getTableNumber());
@@ -92,21 +92,20 @@ public class OrdersAPIController {
     @RequestMapping(value = "/orders/{tableId}", method = RequestMethod.GET)
     public ResponseEntity<?> manejadorGetRecursoOrderTable(@PathVariable Integer tableId) {
         try {
-            ArrayNode tableOrder = mapper.createArrayNode();
             ObjectNode table = mapper.createObjectNode();
             
-            table.put("table", tableId);
+            table.put("id", data.getTableOrder(tableId).getId());
+            table.put("tableNumber", tableId);
             ArrayNode products = mapper.createArrayNode();
             for (String p : data.getTableOrder(tableId).getOrderedDishes()) {
                 ObjectNode product = mapper.createObjectNode();
-                product.put(p, data.getTableOrder(tableId).getDishOrderedAmount(p));
+                product.put("product",p);
+                product.put("quantity",data.getTableOrder(tableId).getDishOrderedAmount(p));
                 products.add(product);
             }
-            table.put("dishes", products);
+            table.put("orderAmountsMap", products);
             
-            tableOrder.add(table);
-            
-            return new ResponseEntity<>(tableOrder, HttpStatus.ACCEPTED);
+            return new ResponseEntity<>(table, HttpStatus.ACCEPTED);
         } catch (Exception ex) {
             Logger.getLogger(OrdersAPIController.class.getName()).log(Level.SEVERE, null, ex);
             return new ResponseEntity<>("<h1>¡Error "+HttpStatus.NOT_FOUND+"!</h1>", HttpStatus.NOT_FOUND);
