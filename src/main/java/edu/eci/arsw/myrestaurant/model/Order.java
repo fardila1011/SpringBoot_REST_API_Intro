@@ -29,6 +29,7 @@ public class Order {
     private int tableNumber;   
     
     public Order(int tableNumber) {
+        this.orderID = id++;
         orderAmountsMap = new ConcurrentHashMap<>();
         this.tableNumber = tableNumber;
     }

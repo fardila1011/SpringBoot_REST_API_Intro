@@ -1,11 +1,11 @@
 var Orders = (function () {
     var showOrder = function (order) {
         var main = document.getElementById('orders');
-        
+
         var cap = document.createElement('h2');
-        cap.appendChild(document.createTextNode('Table '+order.tableNumber));
+        cap.appendChild(document.createTextNode('Table ' + order.tableNumber));
         main.appendChild(cap);
-        
+
         var p = document.createElement('p');
 
         var tbl = document.createElement('table');
@@ -47,15 +47,15 @@ var Orders = (function () {
         }
     };
 
+    var removeOrderById = function (i) {
+        var main = document.getElementById('orders');
+
+        var objectToRemove = document.getElementById(i);
+        console.log(objectToRemove);
+        main.removeChild(objectToRemove);
+    };
+
     return {
         showOrdersByTable: showOrdersByTable
     };
 })();
-
-function removeOrderById(i) {
-    var main = document.getElementById('orders');
-
-    var objectToRemove = document.getElementById(i);
-    console.log(objectToRemove);
-    main.removeChild(objectToRemove);
-}
